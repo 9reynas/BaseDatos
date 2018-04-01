@@ -1,6 +1,7 @@
 package proyect.my.of.example.miyuki.myapplication;
 
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -8,13 +9,14 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
 
     DataBaseManager dataBaseManager;
     EditText nombre, telefono;
-    Button insert, del, Updatetel, buscar, cargar;
+    Button insert, del, Updatetel, buscar, cargar,bck;
     Cursor cursor;
     ListView listView;
     SimpleCursorAdapter adapter;
@@ -35,6 +37,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         buscar = findViewById(R.id.buscar);
         cargar = findViewById(R.id.reload);
         Updatetel = findViewById(R.id.UpdTel);
+        bck = findViewById(R.id.bck);
 
 
         insert.setOnClickListener(this);
@@ -42,6 +45,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         buscar.setOnClickListener(this);
         cargar.setOnClickListener(this);
         Updatetel.setOnClickListener(this);
+        bck.setOnClickListener(this);
 
         clean();
 
@@ -100,8 +104,48 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 clean();
                 break;
 
+            case R.id.bck:
+                new BuscarTask().execute();
+
+                clean();
+                break;
+
 
         }
 
     }
+
+
+    private class BuscarTask extends AsyncTask<Void, Void, Void> {
+
+
+        //Este se genera en el hilo principal
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+
+            Toast.makeText(getApplicationContext(), "se lanzo proceso en segundo  plano", Toast.LENGTH_LONG).show();
+        }
+          // este en un hilo  en background
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+           
+            cursor = dataBaseManager.buscarContacto(nombre.getText().toString());
+            adapter.changeCursor(cursor);
+
+
+            return null;
+        }
+
+
+        ////Este se genera en el hilo principal
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            Toast.makeText(getApplicationContext(), "se termino proceso en segundo  plano", Toast.LENGTH_LONG).show();
+        }
+
+    }
 }
+
