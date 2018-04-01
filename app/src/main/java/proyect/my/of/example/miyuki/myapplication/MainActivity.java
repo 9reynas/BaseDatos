@@ -130,9 +130,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         @Override
         protected Void doInBackground(Void... voids) {
-           
             cursor = dataBaseManager.buscarContacto(nombre.getText().toString());
-            adapter.changeCursor(cursor);
+
+            //simula que la tarea demora 7 segundos pero no bloquea la app por estar en segundo plano
+            try {
+                Thread.sleep(7000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+
+
+
 
 
             return null;
@@ -143,6 +152,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            adapter.changeCursor(cursor);
             Toast.makeText(getApplicationContext(), "se termino proceso en segundo  plano", Toast.LENGTH_LONG).show();
         }
 
